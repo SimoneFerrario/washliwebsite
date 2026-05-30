@@ -6,11 +6,15 @@
 <title>washli — laundry picked up, washed & delivered across Switzerland</title>
 <meta name="description" content="washli is a Swiss on-demand laundry service: we pick up your laundry, wash & fold it, and deliver it back. Launching across Switzerland — join the waitlist." />
 <meta name="theme-color" content="#1B4DB1" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://washli.ch/" />
 <meta property="og:type" content="website" />
+<meta property="og:url" content="https://washli.ch/" />
 <meta property="og:title" content="washli — laundry, picked up & delivered" />
 <meta property="og:description" content="Swiss on-demand laundry: pickup, wash & fold, delivery. Coming soon across Switzerland." />
-<meta property="og:image" content="assets/washli_lockup.png" />
+<meta property="og:image" content="https://washli.ch/assets/washli_lockup.png" />
 <meta name="twitter:card" content="summary_large_image" />
+<link rel="preload" as="image" href="assets/washli_mark.png" fetchpriority="high" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -398,8 +402,40 @@
   .scrollcue svg { width: 18px; height: 18px; animation: nudge 1.8s ease-in-out infinite; }
   @keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 
+  /* ---------- Cookie banner ---------- */
+  .cookie {
+    position: fixed; left: 50%; bottom: clamp(14px, 3vw, 26px);
+    transform: translateX(-50%) translateY(150%); opacity: 0;
+    z-index: 20; width: min(680px, calc(100vw - 28px));
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 16px; border-radius: 16px;
+    background: color-mix(in oklab, var(--card) 88%, transparent);
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    backdrop-filter: blur(14px) saturate(1.2);
+    transition: transform .6s cubic-bezier(.22,.7,.25,1), opacity .5s ease;
+  }
+  .cookie.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .cookie .ck-ic { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; color: var(--primary); background: color-mix(in oklab, var(--primary) 12%, transparent); }
+  [data-theme="dark"] .cookie .ck-ic { color: var(--secondary); background: color-mix(in oklab, var(--secondary) 16%, transparent); }
+  .cookie .ck-ic svg { width: 20px; height: 20px; }
+  .cookie p { margin: 0; flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+  .cookie .ck-actions { flex: none; display: flex; gap: 8px; }
+  .cookie button { appearance: none; cursor: pointer; border-radius: 10px; font: 600 13px/1 "Hanken Grotesk", sans-serif; padding: 10px 14px; transition: transform .12s ease, filter .2s ease, background-color .2s ease; }
+  .cookie .ck-decline { border: 1px solid var(--border); background: transparent; color: var(--text); }
+  .cookie .ck-decline:hover { background: var(--bg-2); }
+  .cookie .ck-accept { border: 0; color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 8px 18px -8px var(--ring); }
+  [data-theme="dark"] .cookie .ck-accept { color: #06101f; }
+  .cookie .ck-accept:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  .cookie button:active { transform: translateY(0) scale(0.97); }
+  @media (max-width: 600px) {
+    .cookie { flex-wrap: wrap; }
+    .cookie p { flex-basis: 100%; }
+    .cookie .ck-actions { width: 100%; }
+    .cookie .ck-actions button { flex: 1; }
+  }
+
   /* ---------- Showcase sections ---------- */
-  .section { position: relative; z-index: 4; padding: clamp(56px, 9vw, 112px) clamp(20px, 5vw, 40px); }
+  .section { position: relative; z-index: 4; padding: clamp(56px, 9vw, 112px) clamp(20px, 5vw, 40px); content-visibility: auto; contain-intrinsic-size: auto 620px; }
   .section-inner { max-width: 1080px; margin: 0 auto; }
   .section-head { text-align: center; max-width: 640px; margin: 0 auto clamp(36px, 6vw, 60px); }
   .section-head .kicker { font: 600 13px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary); }
@@ -423,7 +459,7 @@
   .feature h3 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; margin: 14px 0 6px; }
   .feature p { color: var(--muted); font-size: 14.5px; line-height: 1.5; margin: 0; }
 
-  .coverage { position: relative; z-index: 4; padding: 0 clamp(20px, 5vw, 40px) clamp(58px, 9vw, 104px); }
+  .coverage { position: relative; z-index: 4; padding: 0 clamp(20px, 5vw, 40px) clamp(58px, 9vw, 104px); content-visibility: auto; contain-intrinsic-size: auto 340px; }
   .coverage-card { max-width: 880px; margin: 0 auto; text-align: center; padding: clamp(34px, 6vw, 64px) clamp(24px, 5vw, 56px); border-radius: 26px; border: 1px solid var(--border); background: linear-gradient(160deg, color-mix(in oklab, var(--primary) 10%, var(--card)), var(--card)); box-shadow: var(--shadow); }
   .coverage-card h2 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(26px, 4.6vw, 42px); letter-spacing: -0.03em; line-height: 1.06; margin: 0; text-wrap: balance; }
   .coverage-card p { color: var(--muted); font-size: clamp(15px, 2vw, 18px); line-height: 1.55; margin: 14px auto 26px; max-width: 34em; text-wrap: pretty; }
@@ -450,6 +486,8 @@
     .mark, .eyebrow .dot, .scrollcue svg { animation: none !important; }
     body.ready .reveal { animation: none; opacity: 1; transform: none; }
     .reveal-up { opacity: 1; transform: none; transition: none; }
+    .cookie { transition: opacity .3s ease; }
+    .cookie.show { transform: translateX(-50%) translateY(0); }
   }
 </style>
 </head>
@@ -475,7 +513,7 @@
   <main class="stage">
     <div class="hero">
       <div class="brand reveal" style="--d:.12s">
-        <img class="mark" src="assets/washli_mark.png" alt="washli" />
+        <img class="mark" src="assets/washli_mark.png" alt="washli" width="76" height="76" decoding="async" fetchpriority="high" />
         <span class="wordmark">washli</span>
       </div>
 
@@ -595,17 +633,28 @@
     © <span id="year"></span> washli <span class="mid">·</span> <span data-i="footer">Switzerland</span>
   </footer>
 
+  <aside class="cookie" id="cookie" role="dialog" aria-label="Cookies" aria-live="polite">
+    <span class="ck-ic" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-4-4 4 4 0 0 1-4-4 2 2 0 0 1-2-2z"/><circle cx="9" cy="11" r="1"/><circle cx="14.5" cy="15" r="1"/><circle cx="16" cy="9.5" r="1"/></svg>
+    </span>
+    <p data-i="cookieText">We use cookies to remember your preferences and improve your experience.</p>
+    <div class="ck-actions">
+      <button type="button" class="ck-decline" id="ckDecline" data-i="cookieDecline">Decline</button>
+      <button type="button" class="ck-accept" id="ckAccept" data-i="cookieAccept">Accept</button>
+    </div>
+  </aside>
+
   <script>
   (function () {
     "use strict";
 
     /* ---------------- i18n ---------------- */
     var I18N = {
-      de: { eyebrow: "Bald verfügbar · Schweiz", headline: "Wir sind bald da", sub: "Wäsche abholen, waschen, zurückbringen — bald in der ganzen Schweiz.", button: "Benachrichtige mich", placeholder: "Deine E-Mail", success: "Danke! Wir melden uns.", privacy: "Kein Spam — nur eine Nachricht zum Start in deinem Kanton.", footer: "Schweiz", stepsKicker: "Einfach", stepsTitle: "So funktioniert's", stepsSub: "Drei Schritte. Kein Waschsalon, kein Stress.", step1Title: "Abholung buchen", step1Body: "Wähle deine Zeit — wir kommen zu dir nach Hause.", step2Title: "Wir waschen & falten", step2Body: "Vertraute lokale Wäschereien pflegen deine Kleidung sorgfältig.", step3Title: "Zurückgeliefert", step3Body: "Frische, gefaltete Wäsche — geliefert, wann es dir passt.", featuresKicker: "Warum washli", featuresTitle: "Wäsche, erledigt", featuresSub: "Alles, was du von einem modernen Wäscheservice erwartest.", feat1Title: "Tür zu Tür", feat1Body: "Abholung und Lieferung — nie wieder Wäschesäcke schleppen.", feat2Title: "Live-Tracking", feat2Body: "Verfolge deinen Auftrag in Echtzeit, von Abholung bis Rückgabe.", feat3Title: "Lokale Wäschereien", feat3Body: "Wir arbeiten mit guten Wäschereien in deiner Nähe.", feat4Title: "Express-Option", feat4Body: "Eilig? Wähle die Lieferung am selben Tag.", feat5Title: "Transparente Preise", feat5Body: "Klare Preise vorab — zahle nur, was du nutzt.", feat6Title: "Echte Textilpflege", feat6Body: "Waschen & Falten, Bügeln oder Reinigung — richtig gemacht.", coverageTitle: "Bald in der ganzen Schweiz", coverageBody: "Erfahre als Erste*r, wenn washli in deinem Kanton startet.", coverageButton: "Benachrichtige mich", scroll: "Scrollen", formError: "Etwas ist schiefgelaufen — bitte erneut versuchen." },
-      fr: { eyebrow: "Bientôt disponible · Suisse", headline: "Nous arrivons bientôt", sub: "Linge récupéré, lavé, rapporté — bientôt dans toute la Suisse.", button: "Préviens-moi", placeholder: "Ton e-mail", success: "Merci ! On te tient au courant.", privacy: "Pas de spam — juste un message au lancement dans ton canton.", footer: "Suisse", stepsKicker: "Simple", stepsTitle: "Comment ça marche", stepsSub: "Trois étapes. Sans laverie, sans stress.", step1Title: "Réserve un retrait", step1Body: "Choisis un créneau — on vient chez toi.", step2Title: "On lave et plie", step2Body: "Des blanchisseries locales de confiance soignent ton linge.", step3Title: "Livré chez toi", step3Body: "Linge frais et plié, rapporté quand tu en as besoin.", featuresKicker: "Pourquoi washli", featuresTitle: "Le linge, réglé", featuresSub: "Tout ce qu'on attend d'un service de blanchisserie moderne.", feat1Title: "Porte-à-porte", feat1Body: "Retrait et livraison — fini de porter des sacs de linge.", feat2Title: "Suivi en direct", feat2Body: "Suis ta commande en temps réel, du retrait au retour.", feat3Title: "Blanchisseries locales", feat3Body: "On collabore avec des blanchisseries de qualité près de chez toi.", feat4Title: "Option express", feat4Body: "Pressé ? Choisis la livraison le jour même.", feat5Title: "Prix transparents", feat5Body: "Des prix clairs d'avance — tu paies ce que tu utilises.", feat6Title: "Soin des tissus", feat6Body: "Lavage-pliage, repassage ou nettoyage à sec — bien fait.", coverageTitle: "Bientôt dans toute la Suisse", coverageBody: "Sois le premier informé quand washli arrive dans ton canton.", coverageButton: "Préviens-moi", scroll: "Défiler", formError: "Une erreur est survenue — réessaie." },
-      it: { eyebrow: "Presto disponibile · Svizzera", headline: "Stiamo arrivando", sub: "Ritiriamo, laviamo e riconsegniamo il tuo bucato — presto in tutta la Svizzera.", button: "Avvisami", placeholder: "La tua email", success: "Grazie! Ti avvisiamo noi.", privacy: "Niente spam — solo un avviso al lancio nel tuo cantone.", footer: "Svizzera", stepsKicker: "Semplice", stepsTitle: "Come funziona", stepsSub: "Tre passi. Niente lavanderia, niente stress.", step1Title: "Prenoti il ritiro", step1Body: "Scegli l'orario che preferisci — veniamo noi da te.", step2Title: "Laviamo e pieghiamo", step2Body: "Lavanderie locali di fiducia trattano i tuoi capi con cura.", step3Title: "Riconsegna a domicilio", step3Body: "Bucato fresco e piegato, riconsegnato quando ti serve.", featuresKicker: "Perché washli", featuresTitle: "Il bucato, risolto", featuresSub: "Tutto quello che vuoi da un servizio di lavanderia moderno.", feat1Title: "Porta a porta", feat1Body: "Ritiro e consegna — mai più sacchi di bucato da portare.", feat2Title: "Tracciamento live", feat2Body: "Segui il tuo ordine in tempo reale, dal ritiro alla consegna.", feat3Title: "Lavanderie locali", feat3Body: "Collaboriamo con lavanderie di qualità vicino a te.", feat4Title: "Opzione express", feat4Body: "Hai fretta? Scegli la consegna in giornata.", feat5Title: "Prezzi trasparenti", feat5Body: "Prezzi chiari da subito — paghi solo quello che usi.", feat6Title: "Cura dei tessuti", feat6Body: "Lava e piega, stiro o lavaggio a secco — fatti bene.", coverageTitle: "In arrivo in tutta la Svizzera", coverageBody: "Sii il primo a sapere quando washli arriva nel tuo cantone.", coverageButton: "Avvisami", scroll: "Scorri", formError: "Qualcosa è andato storto — riprova." },
-      rm: { eyebrow: "Prest disponibel · Svizra", headline: "Nus arrivain baud", sub: "Rauba retratga, lavada, reportada — baud en tut la Svizra.", button: "Avisar mai", placeholder: "Tia e-mail", success: "Grazia fitg! Nus ta dain novità.", privacy: "Nagin spam — mo ina nova cura che nus partin en tes chantun.", footer: "Svizra", stepsKicker: "Simpel", stepsTitle: "Uschia funcziuna", stepsSub: "Trais pass. Nagina lavanderia, nagin stress.", step1Title: "Reservescha ina retratga", step1Body: "Tscherna in temp che ta convegn — nus vegnin tar tai.", step2Title: "Nus lavain e plegain", step2Body: "Lavanderias localas da confidanza tractan tia rauba cun premura.", step3Title: "Reconsegnà", step3Body: "Rauba frestga e plegada, reportada cura che ti has basegn.", featuresKicker: "Pertge washli", featuresTitle: "La rauba, reglada", featuresSub: "Tut quai che ti spetgas d'in servetsch da lavanderia modern.", feat1Title: "Da porta a porta", feat1Body: "Retratga e consegna — mai pli sacs da rauba da purtar.", feat2Title: "Persecuziun en directa", feat2Body: "Suonda tia empustaziun en temp real, da la retratga al return.", feat3Title: "Lavanderias localas", feat3Body: "Nus collavurain cun bunas lavanderias datiers da tai.", feat4Title: "Opziun express", feat4Body: "Pressa? Tscherna la consegna il medem di.", feat5Title: "Pretschs transparents", feat5Body: "Pretschs cler ordavant — ti pajas mo quai che ti dovras.", feat6Title: "Tgira da las stoffas", feat6Body: "Lavar e plegar, stirar u nettegiar a sec — fatg endretg.", coverageTitle: "Baud en tut la Svizra", coverageBody: "Saja l'emprim a savair cura che washli parta en tes chantun.", coverageButton: "Avisar mai", scroll: "Rudlar", formError: "Insatge n'è betg ì endretg — emprova anc ina giada." },
-      en: { eyebrow: "Coming soon · Switzerland", headline: "We're almost here", sub: "Laundry picked up, washed, delivered — soon across Switzerland.", button: "Notify me", placeholder: "Your email", success: "Thanks! We'll be in touch.", privacy: "No spam — just one note when we launch in your canton.", footer: "Switzerland", stepsKicker: "Simple", stepsTitle: "How it works", stepsSub: "Three steps. No laundromat, no hassle.", step1Title: "Book a pickup", step1Body: "Pick a time that suits you — we come to your door.", step2Title: "We wash & fold", step2Body: "Trusted local laundries clean your clothes with care.", step3Title: "Delivered back", step3Body: "Fresh, folded laundry returned right when you need it.", featuresKicker: "Why washli", featuresTitle: "Laundry, handled", featuresSub: "Everything you'd want from a modern laundry service.", feat1Title: "Door-to-door", feat1Body: "Pickup and delivery — never carry a laundry bag again.", feat2Title: "Live tracking", feat2Body: "Follow your order in real time, from pickup to return.", feat3Title: "Local laundries", feat3Body: "We partner with quality laundries right in your area.", feat4Title: "Express option", feat4Body: "In a hurry? Choose same-day turnaround.", feat5Title: "Transparent prices", feat5Body: "Clear pricing up front — pay only for what you use.", feat6Title: "Real fabric care", feat6Body: "Wash & fold, ironing or dry-clean — done properly.", coverageTitle: "Rolling out across Switzerland", coverageBody: "Be the first to know when washli launches in your canton.", coverageButton: "Notify me", scroll: "Scroll", formError: "Something went wrong — please try again." }
+      de: { eyebrow: "Bald verfügbar · Schweiz", headline: "Wir sind bald da", sub: "Wäsche abholen, waschen, zurückbringen — bald in der ganzen Schweiz.", button: "Benachrichtige mich", placeholder: "Deine E-Mail", success: "Danke! Wir melden uns.", privacy: "Kein Spam — nur eine Nachricht zum Start in deinem Kanton.", footer: "Schweiz", stepsKicker: "Einfach", stepsTitle: "So funktioniert's", stepsSub: "Drei Schritte. Kein Waschsalon, kein Stress.", step1Title: "Abholung buchen", step1Body: "Wähle deine Zeit — wir kommen zu dir nach Hause.", step2Title: "Wir waschen & falten", step2Body: "Vertraute lokale Wäschereien pflegen deine Kleidung sorgfältig.", step3Title: "Zurückgeliefert", step3Body: "Frische, gefaltete Wäsche — geliefert, wann es dir passt.", featuresKicker: "Warum washli", featuresTitle: "Wäsche, erledigt", featuresSub: "Alles, was du von einem modernen Wäscheservice erwartest.", feat1Title: "Tür zu Tür", feat1Body: "Abholung und Lieferung — nie wieder Wäschesäcke schleppen.", feat2Title: "Live-Tracking", feat2Body: "Verfolge deinen Auftrag in Echtzeit, von Abholung bis Rückgabe.", feat3Title: "Lokale Wäschereien", feat3Body: "Wir arbeiten mit guten Wäschereien in deiner Nähe.", feat4Title: "Express-Option", feat4Body: "Eilig? Wähle die Lieferung am selben Tag.", feat5Title: "Transparente Preise", feat5Body: "Klare Preise vorab — zahle nur, was du nutzt.", feat6Title: "Echte Textilpflege", feat6Body: "Waschen & Falten, Bügeln oder Reinigung — richtig gemacht.", coverageTitle: "Bald in der ganzen Schweiz", coverageBody: "Erfahre als Erste*r, wenn washli in deinem Kanton startet.", coverageButton: "Benachrichtige mich", scroll: "Scrollen", formError: "Etwas ist schiefgelaufen — bitte erneut versuchen.", cookieText: "Wir verwenden Cookies, um deine Einstellungen zu speichern und die Seite zu verbessern.", cookieAccept: "Akzeptieren", cookieDecline: "Ablehnen" },
+      fr: { eyebrow: "Bientôt disponible · Suisse", headline: "Nous arrivons bientôt", sub: "Linge récupéré, lavé, rapporté — bientôt dans toute la Suisse.", button: "Préviens-moi", placeholder: "Ton e-mail", success: "Merci ! On te tient au courant.", privacy: "Pas de spam — juste un message au lancement dans ton canton.", footer: "Suisse", stepsKicker: "Simple", stepsTitle: "Comment ça marche", stepsSub: "Trois étapes. Sans laverie, sans stress.", step1Title: "Réserve un retrait", step1Body: "Choisis un créneau — on vient chez toi.", step2Title: "On lave et plie", step2Body: "Des blanchisseries locales de confiance soignent ton linge.", step3Title: "Livré chez toi", step3Body: "Linge frais et plié, rapporté quand tu en as besoin.", featuresKicker: "Pourquoi washli", featuresTitle: "Le linge, réglé", featuresSub: "Tout ce qu'on attend d'un service de blanchisserie moderne.", feat1Title: "Porte-à-porte", feat1Body: "Retrait et livraison — fini de porter des sacs de linge.", feat2Title: "Suivi en direct", feat2Body: "Suis ta commande en temps réel, du retrait au retour.", feat3Title: "Blanchisseries locales", feat3Body: "On collabore avec des blanchisseries de qualité près de chez toi.", feat4Title: "Option express", feat4Body: "Pressé ? Choisis la livraison le jour même.", feat5Title: "Prix transparents", feat5Body: "Des prix clairs d'avance — tu paies ce que tu utilises.", feat6Title: "Soin des tissus", feat6Body: "Lavage-pliage, repassage ou nettoyage à sec — bien fait.", coverageTitle: "Bientôt dans toute la Suisse", coverageBody: "Sois le premier informé quand washli arrive dans ton canton.", coverageButton: "Préviens-moi", scroll: "Défiler", formError: "Une erreur est survenue — réessaie.", cookieText: "Nous utilisons des cookies pour mémoriser tes préférences et améliorer le site.", cookieAccept: "Accepter", cookieDecline: "Refuser" },
+      it: { eyebrow: "Presto disponibile · Svizzera", headline: "Stiamo arrivando", sub: "Ritiriamo, laviamo e riconsegniamo il tuo bucato — presto in tutta la Svizzera.", button: "Avvisami", placeholder: "La tua email", success: "Grazie! Ti avvisiamo noi.", privacy: "Niente spam — solo un avviso al lancio nel tuo cantone.", footer: "Svizzera", stepsKicker: "Semplice", stepsTitle: "Come funziona", stepsSub: "Tre passi. Niente lavanderia, niente stress.", step1Title: "Prenoti il ritiro", step1Body: "Scegli l'orario che preferisci — veniamo noi da te.", step2Title: "Laviamo e pieghiamo", step2Body: "Lavanderie locali di fiducia trattano i tuoi capi con cura.", step3Title: "Riconsegna a domicilio", step3Body: "Bucato fresco e piegato, riconsegnato quando ti serve.", featuresKicker: "Perché washli", featuresTitle: "Il bucato, risolto", featuresSub: "Tutto quello che vuoi da un servizio di lavanderia moderno.", feat1Title: "Porta a porta", feat1Body: "Ritiro e consegna — mai più sacchi di bucato da portare.", feat2Title: "Tracciamento live", feat2Body: "Segui il tuo ordine in tempo reale, dal ritiro alla consegna.", feat3Title: "Lavanderie locali", feat3Body: "Collaboriamo con lavanderie di qualità vicino a te.", feat4Title: "Opzione express", feat4Body: "Hai fretta? Scegli la consegna in giornata.", feat5Title: "Prezzi trasparenti", feat5Body: "Prezzi chiari da subito — paghi solo quello che usi.", feat6Title: "Cura dei tessuti", feat6Body: "Lava e piega, stiro o lavaggio a secco — fatti bene.", coverageTitle: "In arrivo in tutta la Svizzera", coverageBody: "Sii il primo a sapere quando washli arriva nel tuo cantone.", coverageButton: "Avvisami", scroll: "Scorri", formError: "Qualcosa è andato storto — riprova.", cookieText: "Usiamo i cookie per ricordare le tue preferenze e migliorare l'esperienza.", cookieAccept: "Accetta", cookieDecline: "Rifiuta" },
+      rm: { eyebrow: "Prest disponibel · Svizra", headline: "Nus arrivain baud", sub: "Rauba retratga, lavada, reportada — baud en tut la Svizra.", button: "Avisar mai", placeholder: "Tia e-mail", success: "Grazia fitg! Nus ta dain novità.", privacy: "Nagin spam — mo ina nova cura che nus partin en tes chantun.", footer: "Svizra", stepsKicker: "Simpel", stepsTitle: "Uschia funcziuna", stepsSub: "Trais pass. Nagina lavanderia, nagin stress.", step1Title: "Reservescha ina retratga", step1Body: "Tscherna in temp che ta convegn — nus vegnin tar tai.", step2Title: "Nus lavain e plegain", step2Body: "Lavanderias localas da confidanza tractan tia rauba cun premura.", step3Title: "Reconsegnà", step3Body: "Rauba frestga e plegada, reportada cura che ti has basegn.", featuresKicker: "Pertge washli", featuresTitle: "La rauba, reglada", featuresSub: "Tut quai che ti spetgas d'in servetsch da lavanderia modern.", feat1Title: "Da porta a porta", feat1Body: "Retratga e consegna — mai pli sacs da rauba da purtar.", feat2Title: "Persecuziun en directa", feat2Body: "Suonda tia empustaziun en temp real, da la retratga al return.", feat3Title: "Lavanderias localas", feat3Body: "Nus collavurain cun bunas lavanderias datiers da tai.", feat4Title: "Opziun express", feat4Body: "Pressa? Tscherna la consegna il medem di.", feat5Title: "Pretschs transparents", feat5Body: "Pretschs cler ordavant — ti pajas mo quai che ti dovras.", feat6Title: "Tgira da las stoffas", feat6Body: "Lavar e plegar, stirar u nettegiar a sec — fatg endretg.", coverageTitle: "Baud en tut la Svizra", coverageBody: "Saja l'emprim a savair cura che washli parta en tes chantun.", coverageButton: "Avisar mai", scroll: "Rudlar", formError: "Insatge n'è betg ì endretg — emprova anc ina giada.", cookieText: "Nus utilisain cookies per memorisar tias preferenzas e meglierar la pagina.", cookieAccept: "Acceptar", cookieDecline: "Refusar" },
+      en: { eyebrow: "Coming soon · Switzerland", headline: "We're almost here", sub: "Laundry picked up, washed, delivered — soon across Switzerland.", button: "Notify me", placeholder: "Your email", success: "Thanks! We'll be in touch.", privacy: "No spam — just one note when we launch in your canton.", footer: "Switzerland", stepsKicker: "Simple", stepsTitle: "How it works", stepsSub: "Three steps. No laundromat, no hassle.", step1Title: "Book a pickup", step1Body: "Pick a time that suits you — we come to your door.", step2Title: "We wash & fold", step2Body: "Trusted local laundries clean your clothes with care.", step3Title: "Delivered back", step3Body: "Fresh, folded laundry returned right when you need it.", featuresKicker: "Why washli", featuresTitle: "Laundry, handled", featuresSub: "Everything you'd want from a modern laundry service.", feat1Title: "Door-to-door", feat1Body: "Pickup and delivery — never carry a laundry bag again.", feat2Title: "Live tracking", feat2Body: "Follow your order in real time, from pickup to return.", feat3Title: "Local laundries", feat3Body: "We partner with quality laundries right in your area.", feat4Title: "Express option", feat4Body: "In a hurry? Choose same-day turnaround.", feat5Title: "Transparent prices", feat5Body: "Clear pricing up front — pay only for what you use.", feat6Title: "Real fabric care", feat6Body: "Wash & fold, ironing or dry-clean — done properly.", coverageTitle: "Rolling out across Switzerland", coverageBody: "Be the first to know when washli launches in your canton.", coverageButton: "Notify me", scroll: "Scroll", formError: "Something went wrong — please try again.", cookieText: "We use cookies to remember your preferences and improve your experience.", cookieAccept: "Accept", cookieDecline: "Decline" }
     };
     var LANGS = ["de", "fr", "it", "rm", "en"];
 
@@ -730,6 +779,20 @@
     } else {
       revealEls.forEach(function (el) { el.classList.add("in"); });
     }
+
+    /* ---------------- Cookie banner ---------------- */
+    var cookie = document.getElementById("cookie");
+    function cookieChoice(v) {
+      try { localStorage.setItem("washli-cookie-consent", v); } catch (e) {}
+      cookie.classList.remove("show");
+    }
+    var hasConsent = false;
+    try { hasConsent = !!localStorage.getItem("washli-cookie-consent"); } catch (e) {}
+    if (!hasConsent) {
+      setTimeout(function () { cookie.classList.add("show"); }, 900);
+    }
+    document.getElementById("ckAccept").addEventListener("click", function () { cookieChoice("accepted"); });
+    document.getElementById("ckDecline").addEventListener("click", function () { cookieChoice("declined"); });
 
     /* ---------------- Page reveal ---------------- */
     requestAnimationFrame(function () {
