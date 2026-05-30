@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>washli — coming soon</title>
+<title>washli — laundry picked up, washed & delivered across Switzerland</title>
+<meta name="description" content="washli is a Swiss on-demand laundry service: we pick up your laundry, wash & fold it, and deliver it back. Launching across Switzerland — join the waitlist." />
+<meta name="theme-color" content="#1B4DB1" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="washli — laundry, picked up & delivered" />
+<meta property="og:description" content="Swiss on-demand laundry: pickup, wash & fold, delivery. Coming soon across Switzerland." />
+<meta property="og:image" content="assets/washli_lockup.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -374,6 +381,65 @@
   }
   @keyframes rise-in { to { opacity: 1; transform: translateY(0); } }
 
+  .formerr {
+    display: none;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e0566a;
+  }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .scrollcue {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 6px;
+    margin-top: clamp(28px, 5vh, 48px);
+    color: var(--muted); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .scrollcue svg { width: 18px; height: 18px; animation: nudge 1.8s ease-in-out infinite; }
+  @keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+  /* ---------- Showcase sections ---------- */
+  .section { position: relative; z-index: 4; padding: clamp(56px, 9vw, 112px) clamp(20px, 5vw, 40px); }
+  .section-inner { max-width: 1080px; margin: 0 auto; }
+  .section-head { text-align: center; max-width: 640px; margin: 0 auto clamp(36px, 6vw, 60px); }
+  .section-head .kicker { font: 600 13px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary); }
+  .section-head h2 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(28px, 5vw, 46px); letter-spacing: -0.03em; line-height: 1.05; margin: 12px 0 0; text-wrap: balance; }
+  .section-head p { color: var(--muted); font-size: clamp(15px, 2vw, 18px); line-height: 1.55; margin: 14px auto 0; max-width: 36em; text-wrap: pretty; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 26px); }
+  .step { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: clamp(22px, 3vw, 30px); box-shadow: var(--shadow-sm); transition: transform .25s ease, box-shadow .25s ease, background-color .6s ease, border-color .6s ease; }
+  .step:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .step .num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; font: 800 18px/1 "Bricolage Grotesque", sans-serif; color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 8px 18px -8px var(--ring); }
+  [data-theme="dark"] .step .num { color: #06101f; }
+  .step h3 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; margin: 18px 0 8px; }
+  .step p { color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0; }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 2vw, 22px); }
+  .feature { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: clamp(20px, 2.6vw, 26px); box-shadow: var(--shadow-sm); transition: transform .25s ease, box-shadow .25s ease, background-color .6s ease, border-color .6s ease; }
+  .feature:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .feature .ic { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--primary); background: color-mix(in oklab, var(--primary) 12%, transparent); }
+  [data-theme="dark"] .feature .ic { color: var(--secondary); background: color-mix(in oklab, var(--secondary) 16%, transparent); }
+  .feature .ic svg { width: 22px; height: 22px; }
+  .feature h3 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; margin: 14px 0 6px; }
+  .feature p { color: var(--muted); font-size: 14.5px; line-height: 1.5; margin: 0; }
+
+  .coverage { position: relative; z-index: 4; padding: 0 clamp(20px, 5vw, 40px) clamp(58px, 9vw, 104px); }
+  .coverage-card { max-width: 880px; margin: 0 auto; text-align: center; padding: clamp(34px, 6vw, 64px) clamp(24px, 5vw, 56px); border-radius: 26px; border: 1px solid var(--border); background: linear-gradient(160deg, color-mix(in oklab, var(--primary) 10%, var(--card)), var(--card)); box-shadow: var(--shadow); }
+  .coverage-card h2 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(26px, 4.6vw, 42px); letter-spacing: -0.03em; line-height: 1.06; margin: 0; text-wrap: balance; }
+  .coverage-card p { color: var(--muted); font-size: clamp(15px, 2vw, 18px); line-height: 1.55; margin: 14px auto 26px; max-width: 34em; text-wrap: pretty; }
+
+  /* scroll-in reveal */
+  .reveal-up { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.22,.7,.25,1), transform .7s cubic-bezier(.22,.7,.25,1); }
+  .reveal-up.in { opacity: 1; transform: none; }
+
+  @media (max-width: 860px) {
+    .steps { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
+    .features { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
+  }
+
   @media (max-width: 540px) {
     form.notify { flex-direction: column; }
     button.cta { padding: 15px; }
@@ -381,8 +447,9 @@
 
   @media (prefers-reduced-motion: reduce) {
     .bubble { animation: none !important; }
-    .mark, .eyebrow .dot { animation: none !important; }
+    .mark, .eyebrow .dot, .scrollcue svg { animation: none !important; }
     body.ready .reveal { animation: none; opacity: 1; transform: none; }
+    .reveal-up { opacity: 1; transform: none; transition: none; }
   }
 </style>
 </head>
@@ -422,6 +489,7 @@
 
       <div class="capture reveal" style="--d:.46s" id="capture">
         <form class="notify" id="notify" novalidate>
+          <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <label class="field">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
             <input type="email" id="email" required autocomplete="email" data-i-ph="placeholder" placeholder="Your email" />
@@ -432,10 +500,96 @@
           <span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-11"/></svg></span>
           <span data-i="success">Thanks! We'll be in touch.</span>
         </div>
+        <p class="formerr" id="formerr" data-i="formError">Something went wrong — please try again.</p>
       </div>
       <p class="privacy reveal" style="--d:.54s" data-i="privacy">No spam — just one note when we launch in your canton.</p>
+
+      <div class="scrollcue reveal" style="--d:.62s" aria-hidden="true">
+        <span data-i="scroll">Scroll</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+      </div>
     </div>
   </main>
+
+  <!-- How it works -->
+  <section class="section" id="how">
+    <div class="section-inner">
+      <div class="section-head reveal-up">
+        <span class="kicker" data-i="stepsKicker">Simple</span>
+        <h2 data-i="stepsTitle">How it works</h2>
+        <p data-i="stepsSub">Three steps. No laundromat, no hassle.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal-up">
+          <div class="num">1</div>
+          <h3 data-i="step1Title">Book a pickup</h3>
+          <p data-i="step1Body">Pick a time that suits you — we come to your door.</p>
+        </div>
+        <div class="step reveal-up" style="transition-delay:.08s">
+          <div class="num">2</div>
+          <h3 data-i="step2Title">We wash &amp; fold</h3>
+          <p data-i="step2Body">Trusted local laundries clean your clothes with care.</p>
+        </div>
+        <div class="step reveal-up" style="transition-delay:.16s">
+          <div class="num">3</div>
+          <h3 data-i="step3Title">Delivered back</h3>
+          <p data-i="step3Body">Fresh, folded laundry returned right when you need it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why washli -->
+  <section class="section" id="why" style="padding-top:0">
+    <div class="section-inner">
+      <div class="section-head reveal-up">
+        <span class="kicker" data-i="featuresKicker">Why washli</span>
+        <h2 data-i="featuresTitle">Laundry, handled</h2>
+        <p data-i="featuresSub">Everything you'd want from a modern laundry service.</p>
+      </div>
+      <div class="features">
+        <div class="feature reveal-up">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h13V6H3zM16 9h3l2 3v1h-5z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17.5" cy="17" r="1.6"/></svg></span>
+          <h3 data-i="feat1Title">Door-to-door</h3>
+          <p data-i="feat1Body">Pickup and delivery — never carry a laundry bag again.</p>
+        </div>
+        <div class="feature reveal-up" style="transition-delay:.05s">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          <h3 data-i="feat2Title">Live tracking</h3>
+          <p data-i="feat2Body">Follow your order in real time, from pickup to return.</p>
+        </div>
+        <div class="feature reveal-up" style="transition-delay:.1s">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 6h.01"/><circle cx="12" cy="13" r="4"/></svg></span>
+          <h3 data-i="feat3Title">Local laundries</h3>
+          <p data-i="feat3Body">We partner with quality laundries right in your area.</p>
+        </div>
+        <div class="feature reveal-up">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span>
+          <h3 data-i="feat4Title">Express option</h3>
+          <p data-i="feat4Body">In a hurry? Choose same-day turnaround.</p>
+        </div>
+        <div class="feature reveal-up" style="transition-delay:.05s">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 12 22l-9-9 8.6-8.6A2 2 0 0 1 13 4h5a2 2 0 0 1 2 2v5a2 2 0 0 1-.4 2.4z"/><circle cx="16" cy="8" r="1.3"/></svg></span>
+          <h3 data-i="feat5Title">Transparent prices</h3>
+          <p data-i="feat5Body">Clear pricing up front — pay only for what you use.</p>
+        </div>
+        <div class="feature reveal-up" style="transition-delay:.1s">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 4 4 1-3 3 .7 4.3L12 17l-3.7 1.3L9 14 6 11l4-1z"/></svg></span>
+          <h3 data-i="feat6Title">Real fabric care</h3>
+          <p data-i="feat6Body">Wash &amp; fold, ironing or dry-clean — done properly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coverage / CTA -->
+  <section class="coverage" id="coverage">
+    <div class="coverage-card reveal-up">
+      <h2 data-i="coverageTitle">Rolling out across Switzerland</h2>
+      <p data-i="coverageBody">Be the first to know when washli launches in your canton.</p>
+      <button class="cta" type="button" id="coverageCta" data-i="coverageButton">Notify me</button>
+    </div>
+  </section>
 
   <footer class="reveal" style="--d:.62s">
     © <span id="year"></span> washli <span class="mid">·</span> <span data-i="footer">Switzerland</span>
@@ -447,11 +601,11 @@
 
     /* ---------------- i18n ---------------- */
     var I18N = {
-      de: { eyebrow: "Bald verfügbar · Schweiz", headline: "Wir sind bald da", sub: "Wäsche abholen, waschen, zurückbringen — bald in der ganzen Schweiz.", button: "Benachrichtige mich", placeholder: "Deine E-Mail", success: "Danke! Wir melden uns.", privacy: "Kein Spam — nur eine Nachricht zum Start in deinem Kanton.", footer: "Schweiz" },
-      fr: { eyebrow: "Bientôt disponible · Suisse", headline: "Nous arrivons bientôt", sub: "Linge récupéré, lavé, rapporté — bientôt dans toute la Suisse.", button: "Préviens-moi", placeholder: "Ton e-mail", success: "Merci ! On te tient au courant.", privacy: "Pas de spam — juste un message au lancement dans ton canton.", footer: "Suisse" },
-      it: { eyebrow: "Presto disponibile · Svizzera", headline: "Stiamo arrivando", sub: "Ritiriamo, laviamo e riconsegniamo il tuo bucato — presto in tutta la Svizzera.", button: "Avvisami", placeholder: "La tua email", success: "Grazie! Ti avvisiamo noi.", privacy: "Niente spam — solo un avviso al lancio nel tuo cantone.", footer: "Svizzera" },
-      rm: { eyebrow: "Prest disponibel · Svizra", headline: "Nus arrivain baud", sub: "Rauba retratga, lavada, reportada — baud en tut la Svizra.", button: "Avisar mai", placeholder: "Tia e-mail", success: "Grazia fitg! Nus ta dain novità.", privacy: "Nagin spam — mo ina nova cura che nus partin en tes chantun.", footer: "Svizra" },
-      en: { eyebrow: "Coming soon · Switzerland", headline: "We're almost here", sub: "Laundry picked up, washed, delivered — soon across Switzerland.", button: "Notify me", placeholder: "Your email", success: "Thanks! We'll be in touch.", privacy: "No spam — just one note when we launch in your canton.", footer: "Switzerland" }
+      de: { eyebrow: "Bald verfügbar · Schweiz", headline: "Wir sind bald da", sub: "Wäsche abholen, waschen, zurückbringen — bald in der ganzen Schweiz.", button: "Benachrichtige mich", placeholder: "Deine E-Mail", success: "Danke! Wir melden uns.", privacy: "Kein Spam — nur eine Nachricht zum Start in deinem Kanton.", footer: "Schweiz", stepsKicker: "Einfach", stepsTitle: "So funktioniert's", stepsSub: "Drei Schritte. Kein Waschsalon, kein Stress.", step1Title: "Abholung buchen", step1Body: "Wähle deine Zeit — wir kommen zu dir nach Hause.", step2Title: "Wir waschen & falten", step2Body: "Vertraute lokale Wäschereien pflegen deine Kleidung sorgfältig.", step3Title: "Zurückgeliefert", step3Body: "Frische, gefaltete Wäsche — geliefert, wann es dir passt.", featuresKicker: "Warum washli", featuresTitle: "Wäsche, erledigt", featuresSub: "Alles, was du von einem modernen Wäscheservice erwartest.", feat1Title: "Tür zu Tür", feat1Body: "Abholung und Lieferung — nie wieder Wäschesäcke schleppen.", feat2Title: "Live-Tracking", feat2Body: "Verfolge deinen Auftrag in Echtzeit, von Abholung bis Rückgabe.", feat3Title: "Lokale Wäschereien", feat3Body: "Wir arbeiten mit guten Wäschereien in deiner Nähe.", feat4Title: "Express-Option", feat4Body: "Eilig? Wähle die Lieferung am selben Tag.", feat5Title: "Transparente Preise", feat5Body: "Klare Preise vorab — zahle nur, was du nutzt.", feat6Title: "Echte Textilpflege", feat6Body: "Waschen & Falten, Bügeln oder Reinigung — richtig gemacht.", coverageTitle: "Bald in der ganzen Schweiz", coverageBody: "Erfahre als Erste*r, wenn washli in deinem Kanton startet.", coverageButton: "Benachrichtige mich", scroll: "Scrollen", formError: "Etwas ist schiefgelaufen — bitte erneut versuchen." },
+      fr: { eyebrow: "Bientôt disponible · Suisse", headline: "Nous arrivons bientôt", sub: "Linge récupéré, lavé, rapporté — bientôt dans toute la Suisse.", button: "Préviens-moi", placeholder: "Ton e-mail", success: "Merci ! On te tient au courant.", privacy: "Pas de spam — juste un message au lancement dans ton canton.", footer: "Suisse", stepsKicker: "Simple", stepsTitle: "Comment ça marche", stepsSub: "Trois étapes. Sans laverie, sans stress.", step1Title: "Réserve un retrait", step1Body: "Choisis un créneau — on vient chez toi.", step2Title: "On lave et plie", step2Body: "Des blanchisseries locales de confiance soignent ton linge.", step3Title: "Livré chez toi", step3Body: "Linge frais et plié, rapporté quand tu en as besoin.", featuresKicker: "Pourquoi washli", featuresTitle: "Le linge, réglé", featuresSub: "Tout ce qu'on attend d'un service de blanchisserie moderne.", feat1Title: "Porte-à-porte", feat1Body: "Retrait et livraison — fini de porter des sacs de linge.", feat2Title: "Suivi en direct", feat2Body: "Suis ta commande en temps réel, du retrait au retour.", feat3Title: "Blanchisseries locales", feat3Body: "On collabore avec des blanchisseries de qualité près de chez toi.", feat4Title: "Option express", feat4Body: "Pressé ? Choisis la livraison le jour même.", feat5Title: "Prix transparents", feat5Body: "Des prix clairs d'avance — tu paies ce que tu utilises.", feat6Title: "Soin des tissus", feat6Body: "Lavage-pliage, repassage ou nettoyage à sec — bien fait.", coverageTitle: "Bientôt dans toute la Suisse", coverageBody: "Sois le premier informé quand washli arrive dans ton canton.", coverageButton: "Préviens-moi", scroll: "Défiler", formError: "Une erreur est survenue — réessaie." },
+      it: { eyebrow: "Presto disponibile · Svizzera", headline: "Stiamo arrivando", sub: "Ritiriamo, laviamo e riconsegniamo il tuo bucato — presto in tutta la Svizzera.", button: "Avvisami", placeholder: "La tua email", success: "Grazie! Ti avvisiamo noi.", privacy: "Niente spam — solo un avviso al lancio nel tuo cantone.", footer: "Svizzera", stepsKicker: "Semplice", stepsTitle: "Come funziona", stepsSub: "Tre passi. Niente lavanderia, niente stress.", step1Title: "Prenoti il ritiro", step1Body: "Scegli l'orario che preferisci — veniamo noi da te.", step2Title: "Laviamo e pieghiamo", step2Body: "Lavanderie locali di fiducia trattano i tuoi capi con cura.", step3Title: "Riconsegna a domicilio", step3Body: "Bucato fresco e piegato, riconsegnato quando ti serve.", featuresKicker: "Perché washli", featuresTitle: "Il bucato, risolto", featuresSub: "Tutto quello che vuoi da un servizio di lavanderia moderno.", feat1Title: "Porta a porta", feat1Body: "Ritiro e consegna — mai più sacchi di bucato da portare.", feat2Title: "Tracciamento live", feat2Body: "Segui il tuo ordine in tempo reale, dal ritiro alla consegna.", feat3Title: "Lavanderie locali", feat3Body: "Collaboriamo con lavanderie di qualità vicino a te.", feat4Title: "Opzione express", feat4Body: "Hai fretta? Scegli la consegna in giornata.", feat5Title: "Prezzi trasparenti", feat5Body: "Prezzi chiari da subito — paghi solo quello che usi.", feat6Title: "Cura dei tessuti", feat6Body: "Lava e piega, stiro o lavaggio a secco — fatti bene.", coverageTitle: "In arrivo in tutta la Svizzera", coverageBody: "Sii il primo a sapere quando washli arriva nel tuo cantone.", coverageButton: "Avvisami", scroll: "Scorri", formError: "Qualcosa è andato storto — riprova." },
+      rm: { eyebrow: "Prest disponibel · Svizra", headline: "Nus arrivain baud", sub: "Rauba retratga, lavada, reportada — baud en tut la Svizra.", button: "Avisar mai", placeholder: "Tia e-mail", success: "Grazia fitg! Nus ta dain novità.", privacy: "Nagin spam — mo ina nova cura che nus partin en tes chantun.", footer: "Svizra", stepsKicker: "Simpel", stepsTitle: "Uschia funcziuna", stepsSub: "Trais pass. Nagina lavanderia, nagin stress.", step1Title: "Reservescha ina retratga", step1Body: "Tscherna in temp che ta convegn — nus vegnin tar tai.", step2Title: "Nus lavain e plegain", step2Body: "Lavanderias localas da confidanza tractan tia rauba cun premura.", step3Title: "Reconsegnà", step3Body: "Rauba frestga e plegada, reportada cura che ti has basegn.", featuresKicker: "Pertge washli", featuresTitle: "La rauba, reglada", featuresSub: "Tut quai che ti spetgas d'in servetsch da lavanderia modern.", feat1Title: "Da porta a porta", feat1Body: "Retratga e consegna — mai pli sacs da rauba da purtar.", feat2Title: "Persecuziun en directa", feat2Body: "Suonda tia empustaziun en temp real, da la retratga al return.", feat3Title: "Lavanderias localas", feat3Body: "Nus collavurain cun bunas lavanderias datiers da tai.", feat4Title: "Opziun express", feat4Body: "Pressa? Tscherna la consegna il medem di.", feat5Title: "Pretschs transparents", feat5Body: "Pretschs cler ordavant — ti pajas mo quai che ti dovras.", feat6Title: "Tgira da las stoffas", feat6Body: "Lavar e plegar, stirar u nettegiar a sec — fatg endretg.", coverageTitle: "Baud en tut la Svizra", coverageBody: "Saja l'emprim a savair cura che washli parta en tes chantun.", coverageButton: "Avisar mai", scroll: "Rudlar", formError: "Insatge n'è betg ì endretg — emprova anc ina giada." },
+      en: { eyebrow: "Coming soon · Switzerland", headline: "We're almost here", sub: "Laundry picked up, washed, delivered — soon across Switzerland.", button: "Notify me", placeholder: "Your email", success: "Thanks! We'll be in touch.", privacy: "No spam — just one note when we launch in your canton.", footer: "Switzerland", stepsKicker: "Simple", stepsTitle: "How it works", stepsSub: "Three steps. No laundromat, no hassle.", step1Title: "Book a pickup", step1Body: "Pick a time that suits you — we come to your door.", step2Title: "We wash & fold", step2Body: "Trusted local laundries clean your clothes with care.", step3Title: "Delivered back", step3Body: "Fresh, folded laundry returned right when you need it.", featuresKicker: "Why washli", featuresTitle: "Laundry, handled", featuresSub: "Everything you'd want from a modern laundry service.", feat1Title: "Door-to-door", feat1Body: "Pickup and delivery — never carry a laundry bag again.", feat2Title: "Live tracking", feat2Body: "Follow your order in real time, from pickup to return.", feat3Title: "Local laundries", feat3Body: "We partner with quality laundries right in your area.", feat4Title: "Express option", feat4Body: "In a hurry? Choose same-day turnaround.", feat5Title: "Transparent prices", feat5Body: "Clear pricing up front — pay only for what you use.", feat6Title: "Real fabric care", feat6Body: "Wash & fold, ironing or dry-clean — done properly.", coverageTitle: "Rolling out across Switzerland", coverageBody: "Be the first to know when washli launches in your canton.", coverageButton: "Notify me", scroll: "Scroll", formError: "Something went wrong — please try again." }
     };
     var LANGS = ["de", "fr", "it", "rm", "en"];
 
@@ -508,22 +662,74 @@
       applyTheme(cur === "dark" ? "light" : "dark");
     });
 
-    /* ---------------- Form ---------------- */
+    /* ---------------- Form → Web3Forms ---------------- */
     var form = document.getElementById("notify");
     var capture = document.getElementById("capture");
     var email = document.getElementById("email");
+    var formerr = document.getElementById("formerr");
+    var WEB3FORMS_KEY = "ac5b6547-512a-4cb7-97c4-f03101424f77";
+
+    function shakeEmail() {
+      email.focus();
+      email.parentElement.style.boxShadow = "0 0 0 4px color-mix(in oklab, #e0566a 45%, transparent)";
+      setTimeout(function () { email.parentElement.style.boxShadow = ""; }, 1100);
+    }
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      formerr.style.display = "none";
       var val = (email.value || "").trim();
       var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-      if (!ok) {
-        email.focus();
-        email.parentElement.style.boxShadow = "0 0 0 4px color-mix(in oklab, #e0566a 45%, transparent)";
-        setTimeout(function () { email.parentElement.style.boxShadow = ""; }, 1100);
-        return;
-      }
-      capture.classList.add("done");
+      if (!ok) { shakeEmail(); return; }
+
+      var btn = form.querySelector("button.cta");
+      btn.disabled = true;
+
+      var lang = document.documentElement.getAttribute("lang") || "en";
+      var fd = new FormData(form); // carries the botcheck honeypot if a bot filled it
+      fd.append("access_key", WEB3FORMS_KEY);
+      fd.set("email", val);
+      fd.append("subject", "New washli waitlist signup");
+      fd.append("from_name", "washli website");
+      fd.append("language", lang);
+
+      fetch("https://api.web3forms.com/submit", { method: "POST", body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data && data.success) {
+            capture.classList.add("done");
+          } else {
+            formerr.style.display = "block";
+            btn.disabled = false;
+          }
+        })
+        .catch(function () {
+          formerr.style.display = "block";
+          btn.disabled = false;
+        });
     });
+
+    /* Coverage CTA → smooth-scroll back to the email capture */
+    var coverageCta = document.getElementById("coverageCta");
+    if (coverageCta) {
+      coverageCta.addEventListener("click", function () {
+        capture.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(function () { try { email.focus({ preventScroll: true }); } catch (e) { email.focus(); } }, 480);
+      });
+    }
+
+    /* Scroll-in reveal for the showcase sections */
+    var revealEls = document.querySelectorAll(".reveal-up");
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
+      revealEls.forEach(function (el) { io.observe(el); });
+    } else {
+      revealEls.forEach(function (el) { el.classList.add("in"); });
+    }
 
     /* ---------------- Page reveal ---------------- */
     requestAnimationFrame(function () {
