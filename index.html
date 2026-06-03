@@ -64,8 +64,15 @@
   .dots { position: fixed; right: clamp(14px,3vw,30px); top: 50%; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; gap: 14px; }
   .dots button { appearance: none; border: 0; cursor: pointer; width: 12px; height: 12px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.35); position: relative; transition: background-color .3s, transform .3s; }
   .dots button[aria-current="true"] { background: #fff; transform: scale(1.3); }
-  .dots button::after { content: attr(data-label); position: absolute; right: 22px; top: 50%; transform: translateY(-50%); font: 600 11px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.85); white-space: nowrap; opacity: 0; transition: opacity .25s; pointer-events: none; }
-  .dots button[aria-current="true"]::after, .dots:hover button::after { opacity: 0.95; }
+  .dots button::after { content: attr(data-label); position: absolute; right: 22px; top: 50%; transform: translateY(-50%); font: 600 11px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 7px rgba(0,28,72,0.6); white-space: nowrap; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .dots button[aria-current="true"]::after, .dots:hover button::after { opacity: 0.98; }
+
+  /* touch aura: a soft glow that bursts from the tap point to signal the scene transition */
+  #aura { position: fixed; left: 0; top: 0; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; pointer-events: none; z-index: 7; opacity: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, color-mix(in srgb, var(--c, #a6dcff) 55%, transparent) 30%, transparent 70%); }
+  #aura.go { animation: auraBurst 0.9s cubic-bezier(.16,1,.3,1); }
+  @keyframes auraBurst { 0% { transform: scale(0.18); opacity: 0.95; } 100% { transform: scale(13); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { #aura.go { animation: none; } }
 
   @media (max-width: 620px) {
     /* slimmer card on phones so the 3D panorama stays mostly visible */
@@ -81,7 +88,8 @@
     .cta { width: 100%; }
     .hint { display: none; }
     .dots { right: 12px; gap: 12px; }
-    .dots button::after { display: none; }
+    /* keep the ACTIVE step label visible on mobile (no hover there) */
+    .dots button[aria-current="true"]::after { opacity: 0.98; }
   }
 
   .cookie { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(150%); z-index: 6; display: flex; align-items: center; gap: 13px; width: min(640px, calc(100vw - 28px)); padding: 12px 15px; border-radius: 16px; background: oklch(1 0 0 / 0.92); border: 1px solid var(--border); box-shadow: 0 22px 56px -24px rgba(5,20,55,0.6); backdrop-filter: blur(12px); opacity: 0; transition: transform .5s cubic-bezier(.16,1,.3,1), opacity .4s; }
@@ -142,6 +150,7 @@
   </div>
 
   <nav class="dots" id="dots" aria-label="Tappe"></nav>
+  <div id="aura" aria-hidden="true"></div>
 
   <div class="cookie" id="cookie" role="dialog" aria-live="polite">
     <p data-i="ckText"></p>
@@ -287,9 +296,12 @@
 
     // ---- POV: drag to look around; the world streams toward you (forward drift) ----
     let yaw = 0, pitch = 0, tYaw = 0, tPitch = 0, dragging = false, lx = 0, ly = 0, downX = 0, downY = 0, downT = 0;
+    // touch aura — bursts from the tap point, tinted to the next step's colour
+    const auraEl = document.getElementById("aura");
+    function auraAt(x, y, col) { if (!auraEl) return; auraEl.style.left = x + "px"; auraEl.style.top = y + "px"; auraEl.style.setProperty("--c", col); auraEl.classList.remove("go"); void auraEl.offsetWidth; auraEl.classList.add("go"); }
     canvas.addEventListener("pointerdown", (e) => { dragging = true; lx = e.clientX; ly = e.clientY; downX = e.clientX; downY = e.clientY; downT = performance.now(); }, { passive: true });
     window.addEventListener("pointermove", (e) => { if (!dragging) return; tYaw += (e.clientX-lx)*0.0022; tPitch += (e.clientY-ly)*0.0022; tPitch = Math.max(-0.5, Math.min(0.5, tPitch)); tYaw = Math.max(-0.8, Math.min(0.8, tYaw)); lx = e.clientX; ly = e.clientY; }, { passive: true });
-    window.addEventListener("pointerup", (e) => { dragging = false; const moved = Math.hypot(e.clientX-downX, e.clientY-downY); if (moved < 8 && performance.now()-downT < 500) { const el = document.elementFromPoint(e.clientX,e.clientY); if (!(el && el.closest && el.closest("#ui,.cookie,.dots"))) goToScene(moodIdx+1); } }, { passive: true });
+    window.addEventListener("pointerup", (e) => { dragging = false; const moved = Math.hypot(e.clientX-downX, e.clientY-downY); if (moved < 8 && performance.now()-downT < 500) { const el = document.elementFromPoint(e.clientX,e.clientY); if (!(el && el.closest && el.closest("#ui,.cookie,.dots"))) { auraAt(e.clientX, e.clientY, "#" + MOODS[(moodIdx+1)%MOODS.length].top.getHexString()); goToScene(moodIdx+1); } } }, { passive: true });
     window.addEventListener("pointercancel", () => { dragging = false; }, { passive: true });
 
     function resize() { const w=window.innerWidth,h=window.innerHeight; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); composer.setSize(w,h); bloom.setSize(w,h); }
