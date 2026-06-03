@@ -146,10 +146,6 @@
     border: 2px solid oklch(0.74 0.15 206 / 0.7); opacity: 0; will-change: transform, opacity; }
   #touchfx .ripple.go { animation: tripple .72s ease-out; }
   @keyframes tripple { 0% { transform: scale(0.4); opacity: 0.85; } 100% { transform: scale(5); opacity: 0; } }
-  /* while the user is dragging on the path, the flow brightens + quickens */
-  .stage.touch-live .net-flow { stroke-width: 5; filter: drop-shadow(0 0 13px oklch(0.62 0.18 220 / 0.95)); animation-duration: 1.1s; }
-  .stage.touch-live .flowdot { animation-duration: 3.4s; }
-  .stage.touch-live .surge { animation-duration: 2.6s; }
 
   /* ---- email capture states ---- */
   .field.invalid { box-shadow: 0 0 0 4px oklch(0.62 0.18 18 / 0.30) !important; }
@@ -193,8 +189,11 @@
   .hero.vertical .chip { display: none; }
   .hero.vertical .sat-label { display: none; }
   .hero.vertical .actions { flex-direction: column; align-items: stretch; width: 100%; max-width: 380px; margin-left: auto; margin-right: auto; }
-  .hero.vertical .field { width: 100%; }
-  .hero.vertical .field input { width: 100%; max-width: none; text-align: center; }
+  .hero.vertical .field { width: 100%; position: relative; padding: 0; justify-content: center; }
+  /* Mobile: take the mail icon out of flow so the placeholder centres in the
+     FULL field — lining its text up with the centred button label. */
+  .hero.vertical .field svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); }
+  .hero.vertical .field input { width: 100%; max-width: none; text-align: center; padding: 15px 38px; }
   .hero.vertical .cta { width: 100%; padding: 15px; }
 
   @media (max-width: 520px) {
@@ -505,7 +504,7 @@
       fx.appendChild(bead); fx.appendChild(ripple);
       document.body.appendChild(fx);
 
-      var lastX = 0, lastY = 0, raf = 0, liveStage = null;
+      var lastX = 0, lastY = 0, raf = 0, down = false;
 
       function nearestOnPath(path, cx, cy) {
         var svg = path.ownerSVGElement; if (!svg) return null;
@@ -523,13 +522,11 @@
         return best;
       }
 
-      function hide() {
-        bead.classList.remove("on");
-        if (liveStage) { liveStage.classList.remove("touch-live"); liveStage = null; }
-      }
+      function hide() { bead.classList.remove("on"); }
 
       function frame() {
         raf = 0;
+        if (!down) { hide(); return; }
         var stage = document.querySelector(".stage");
         var path = document.querySelector(".net-flow") || document.querySelector(".net-base");
         if (!stage || !path) { hide(); return; }
@@ -537,7 +534,8 @@
         if (lastX < r.left - pad || lastX > r.right + pad || lastY < r.top - pad || lastY > r.bottom + pad) {
           hide(); return;
         }
-        stage.classList.add("touch-live"); liveStage = stage;
+        // Only the local bead snaps to the path — the path itself is NOT
+        // animated/sped-up (that read as headache-inducing on hover).
         var n = nearestOnPath(path, lastX, lastY);
         if (!n) return;
         bead.style.left = n.x + "px"; bead.style.top = n.y + "px";
@@ -545,6 +543,8 @@
       }
 
       function onMove(e) {
+        // React to a finger/cursor only while PRESSED (no hover reaction).
+        if (!down) return;
         var t = (e.touches && e.touches[0]) || e;
         if (t == null || t.clientX == null) return;
         lastX = t.clientX; lastY = t.clientY;
@@ -555,16 +555,18 @@
         ripple.classList.remove("go"); void ripple.offsetWidth; ripple.classList.add("go");
       }
       function onDown(e) {
+        down = true;
         var t = (e.touches && e.touches[0]) || e;
         if (t != null && t.clientX != null) rippleAt(t.clientX, t.clientY);
         onMove(e);
       }
+      function end() { down = false; hide(); }
 
-      window.addEventListener("pointermove", onMove, { passive: true });
       window.addEventListener("pointerdown", onDown, { passive: true });
-      window.addEventListener("pointerup", hide, { passive: true });
-      window.addEventListener("pointercancel", hide, { passive: true });
-      window.addEventListener("blur", hide);
+      window.addEventListener("pointermove", onMove, { passive: true });
+      window.addEventListener("pointerup", end, { passive: true });
+      window.addEventListener("pointercancel", end, { passive: true });
+      window.addEventListener("blur", end);
     })();
   </script>
 </body>
