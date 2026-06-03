@@ -6,6 +6,8 @@
 <title>washli — il mondo fresco</title>
 <meta name="description" content="washli: fluttua nel mondo fresco del bucato. Un viaggio immersivo in prima persona tra panni puliti, bolle e luce. Trascina per guardarti intorno." />
 <meta name="theme-color" content="#1B4DB1" />
+<link rel="icon" type="image/png" href="assets/washli_mark.png" />
+<link rel="apple-touch-icon" href="assets/washli_mark.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -177,7 +179,7 @@
     const MOODS = [
       { key: "ritiro",   top: C("#3f8fe0"), bot: C("#0e3a78"), fog: C("#1f5fb0"), fogD: 0.030, sun: C("#dcefff"), sunI: 1.05, speed: 2.2, sparkle: 0.7 },
       { key: "lavaggio", top: C("#2f7fd6"), bot: C("#06224f"), fog: C("#124a96"), fogD: 0.055, sun: C("#bfe3ff"), sunI: 0.95, speed: 3.4, sparkle: 1.0 },
-      { key: "consegna", top: C("#bfeaff"), bot: C("#2f86d6"), fog: C("#7fc2e8"), fogD: 0.024, sun: C("#ffffff"), sunI: 1.45, speed: 2.0, sparkle: 1.3 },
+      { key: "consegna", top: C("#9fcfe8"), bot: C("#2a6aae"), fog: C("#5f9fcb"), fogD: 0.032, sun: C("#eaf6ff"), sunI: 1.08, speed: 2.0, sparkle: 0.85 },
     ];
 
     const canvas = document.getElementById("scene");
@@ -210,32 +212,34 @@
     scene.add(new THREE.HemisphereLight(0xeaf6ff, 0x06224f, 1.0));
     const sun = new THREE.DirectionalLight(MOODS[0].sun.clone(), MOODS[0].sunI); sun.position.set(2, 12, 4); scene.add(sun);
 
-    // ---- light shafts (god rays) from the surface ----
-    const shafts = new THREE.Group(); scene.add(shafts);
+    // ---- light shafts (god rays): soft, diffuse, gently shimmering/swaying ----
+    const shaftGeo = new THREE.PlaneGeometry(3.6, 50, 1, 1);
+    const shaftFrag = "uniform float uTime;uniform float uPhase;uniform float uOpacity;uniform vec3 uColor;varying vec2 vUv;void main(){ float edge=smoothstep(0.0,0.5,vUv.x)*smoothstep(1.0,0.5,vUv.x); edge*=edge; float vert=mix(0.92,0.04,vUv.y); float shim=0.55+0.45*sin(uTime*0.6+uPhase+vUv.y*1.6); gl_FragColor=vec4(uColor, uOpacity*edge*vert*shim);}";
+    const shaftVert = "varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}";
+    const shafts = [];
     for (let i = 0; i < (isMobile ? 4 : 7); i++) {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 40), new THREE.MeshBasicMaterial({ color: 0xcfeaff, transparent: true, opacity: 0.05, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
-      m.position.set((Math.random() - 0.5) * 26, 6, -8 - Math.random() * 36); m.rotation.z = (Math.random() - 0.5) * 0.5; m.scale.x = 0.5 + Math.random() * 1.4; shafts.add(m);
+      const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+        uniforms: { uTime: { value: 0 }, uPhase: { value: Math.random() * 6.28 }, uOpacity: { value: 0.05 + Math.random() * 0.06 }, uColor: { value: new THREE.Color("#cfeaff") } },
+        vertexShader: shaftVert, fragmentShader: shaftFrag });
+      const m = new THREE.Mesh(shaftGeo, mat);
+      m.position.set((Math.random() - 0.5) * 30, 9, -10 - Math.random() * 42);
+      m.rotation.z = (Math.random() - 0.5) * 0.3; m.scale.x = 0.7 + Math.random() * 1.8;
+      m.userData = { baseX: m.position.x, sway: 0.6 + Math.random() * 1.1, ph: Math.random() * 6.28 };
+      shafts.push(m); scene.add(m);
     }
 
-    // ---- floating clean garments: t-shirt / pants / towel silhouettes ----
-    function tshirt() { const s = new THREE.Shape(); s.moveTo(-0.5,0.30); s.lineTo(-0.5,0.02); s.lineTo(-0.26,0.07); s.lineTo(-0.26,-0.62); s.lineTo(0.26,-0.62); s.lineTo(0.26,0.07); s.lineTo(0.5,0.02); s.lineTo(0.5,0.30); s.lineTo(0.18,0.42); s.quadraticCurveTo(0,0.28,-0.18,0.42); s.lineTo(-0.5,0.30); return s; }
-    function pants() { const s = new THREE.Shape(); s.moveTo(-0.28,0.5); s.lineTo(0.28,0.5); s.lineTo(0.26,-0.55); s.lineTo(0.07,-0.55); s.lineTo(0.0,0.12); s.lineTo(-0.07,-0.55); s.lineTo(-0.26,-0.55); s.lineTo(-0.28,0.5); return s; }
-    function towel() { const s = new THREE.Shape(); const w=0.38,h=0.6,r=0.08; s.moveTo(-w+r,-h); s.lineTo(w-r,-h); s.quadraticCurveTo(w,-h,w,-h+r); s.lineTo(w,h-r); s.quadraticCurveTo(w,h,w-r,h); s.lineTo(-w+r,h); s.quadraticCurveTo(-w,h,-w,h-r); s.lineTo(-w,-h+r); s.quadraticCurveTo(-w,-h,-w+r,-h); return s; }
-    const clothGeos = [new THREE.ShapeGeometry(tshirt()), new THREE.ShapeGeometry(pants()), new THREE.ShapeGeometry(towel())];
-    clothGeos.forEach((g) => g.computeBoundingBox());
-    const clothVert = "uniform float uTime; uniform float uPhase; varying vec2 vUv; varying float vR; void main(){ vUv=uv; vec3 p=position; float t=uTime+uPhase; float w=sin(p.x*4.0+t*1.6)*0.06+sin(p.y*5.0+t*1.1)*0.05; p.z+=w; vR=w; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}";
-    const clothFrag = "uniform vec3 uA; uniform vec3 uB; varying vec2 vUv; varying float vR; void main(){ vec3 col=mix(uA,uB,clamp(vUv.y,0.0,1.0)); col+=vR*0.8; gl_FragColor=vec4(col,0.96);}";
-    const cloth = [];
-    const palette = [["#eef6ff","#bfe0ff"],["#ffffff","#cdeeff"],["#dffaf2","#9fe6df"],["#eaf2ff","#8fb8ef"]];
+    // ---- clean laundry as EMOJI sprites (👕👖🧦🧺🧼…) — reads better than drawn shapes ----
+    function emojiTex(ch) { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"); x.clearRect(0,0,128,128); x.font = "100px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(ch, 64, 72); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; }
+    const EMOJIS = ["👕","👖","🧦","🧺","🧼","👚","🩳","🧤","🧣","🧥"];
+    const emojiTexCache = EMOJIS.map(emojiTex);
+    const items = [];
     for (let i = 0; i < COUNTS.cloth; i++) {
-      const pal = palette[i % palette.length];
-      const mat = new THREE.ShaderMaterial({ uniforms: { uTime: { value: 0 }, uPhase: { value: Math.random()*100 }, uA: { value: C(pal[0]) }, uB: { value: C(pal[1]) } }, vertexShader: clothVert, fragmentShader: clothFrag, transparent: true, side: THREE.DoubleSide, depthWrite: false });
-      const m = new THREE.Mesh(clothGeos[i % clothGeos.length], mat);
-      m.position.set((Math.random()-0.5)*22, (Math.random()-0.5)*14, -Math.random()*60);
-      m.rotation.set(Math.random()*6.28, Math.random()*6.28, Math.random()*6.28);
-      m.scale.setScalar(0.8 + Math.random()*1.1);
-      m.userData = { sx: (Math.random()-0.5)*0.5, sy: (Math.random()-0.5)*0.5, sz: (Math.random()-0.5)*0.5 };
-      cloth.push(m); scene.add(m);
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: emojiTexCache[i % emojiTexCache.length], transparent: true, depthWrite: false }));
+      s.position.set((Math.random()-0.5)*22, (Math.random()-0.5)*14, -Math.random()*60);
+      const sz = 0.9 + Math.random()*0.9; s.scale.set(sz, sz, sz);
+      s.material.rotation = (Math.random()-0.5)*0.6;
+      s.userData = { rot: (Math.random()-0.5)*0.5, ph: Math.random()*6.28, base: sz };
+      items.push(s); scene.add(s);
     }
 
     // ---- soap bubbles: glossy mirror spheres reflecting the HDRI ----
@@ -287,12 +291,12 @@
       yaw += (tYaw-yaw)*Math.min(1,dt*3); pitch += (tPitch-pitch)*Math.min(1,dt*3);
       camera.rotation.set(pitch, yaw, 0);
       const dz = speed * dt;
-      for (const m of cloth) { m.material.uniforms.uTime.value = tm; m.rotation.x += m.userData.sx*dt; m.rotation.y += m.userData.sy*dt; m.rotation.z += m.userData.sz*dt; const p = m.position; p.z += dz; if (p.z > 6) { p.z -= 66; p.x = (Math.random()-0.5)*22; p.y = (Math.random()-0.5)*14; } }
+      for (const s of items) { const p = s.position; p.z += dz; if (p.z > 6) { p.z -= 66; p.x = (Math.random()-0.5)*22; p.y = (Math.random()-0.5)*14; } s.material.rotation += s.userData.rot*dt*0.4; const pl = s.userData.base*(1 + 0.06*Math.sin(tm*1.4 + s.userData.ph)); s.scale.set(pl, pl, pl); }
       for (let i=0;i<bdata.length;i++){ const d=bdata[i]; d.z += dz; d.y += d.rise*dt; if (d.z>6){ d.z-=66; d.x=(Math.random()-0.5)*26; } if (d.y>9) d.y=-9; pv.set(d.x+Math.sin(tm*0.6+i)*0.3, d.y, d.z); sc.setScalar(d.r); mtx.compose(pv,q,sc); bubbles.setMatrixAt(i,mtx); }
       bubbles.instanceMatrix.needsUpdate = true;
       { const arr = stars.geometry.getAttribute("position"); for (let i=0;i<arr.count;i++){ let z=arr.getZ(i)+dz; if (z>6){ z-=66; arr.setX(i,(Math.random()-0.5)*34); arr.setY(i,(Math.random()-0.5)*20); } arr.setZ(i,z);} arr.needsUpdate = true; }
       starMat.uniforms.uTime.value = tm; starMat.uniforms.uInt.value = sparkle;
-      shafts.rotation.y = Math.sin(tm*0.05)*0.05;
+      for (const m of shafts) { m.material.uniforms.uTime.value = tm; const p = m.position; p.z += dz*0.6; if (p.z > 12) p.z -= 72; m.position.x = m.userData.baseX + Math.sin(tm*0.2 + m.userData.ph)*m.userData.sway; }
       composer.render();
     }
 
