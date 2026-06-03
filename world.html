@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>washli — il mondo fresco</title>
+<meta name="description" content="washli: entra nel mondo fresco del bucato in rete. Capi puliti che fluttuano, bolle di sapone, luce. Trascina per guardarti intorno, tocca per far nascere freschezza." />
+<meta name="theme-color" content="#1B4DB1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #1B4DB1;
+    --secondary: #24B3A8;
+    --text: oklch(0.24 0.04 258);
+    --muted: oklch(0.52 0.035 258);
+    --border: oklch(0.9 0.02 252 / 0.7);
+    --card: oklch(0.99 0.004 250 / 0.72);
+    --ring: oklch(0.62 0.13 258 / 0.35);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    color: var(--text);
+    background: #eaf2fb;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  /* WebGL canvas fills the viewport, behind everything */
+  #scene { position: fixed; inset: 0; z-index: 0; display: block; touch-action: none; cursor: grab; }
+  #scene:active { cursor: grabbing; }
+  /* a CSS gradient sits under the canvas as an instant paint + fallback */
+  #bg { position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(120% 90% at 82% 8%, #cfe6ff 0%, transparent 60%),
+      radial-gradient(100% 90% at 10% 96%, #c7f3ec 0%, transparent 58%),
+      linear-gradient(180deg, #eef6ff 0%, #e6f5f1 100%); }
+
+  /* ---- overlay UI ---- */
+  #ui { position: fixed; inset: 0; z-index: 4; pointer-events: none; display: flex; flex-direction: column; }
+  #ui > * { pointer-events: auto; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px clamp(16px,4vw,52px); }
+  .lockup { display: inline-flex; align-items: center; gap: 11px; }
+  .lockup img { width: 36px; height: 36px; filter: drop-shadow(0 8px 18px oklch(0.62 0.13 258 / 0.35)); }
+  .lockup b { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 23px; letter-spacing: -0.03em; color: var(--primary); }
+  .seg { display: inline-flex; gap: 2px; padding: 4px; background: oklch(1 0 0 / 0.6); border: 1px solid var(--border); border-radius: 999px; backdrop-filter: blur(10px); box-shadow: 0 2px 12px -4px oklch(0.4 0.05 258 / 0.3); }
+  .seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 12px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0.04em; padding: 8px 10px; border-radius: 999px; cursor: pointer; transition: color .2s, background-color .2s; }
+  .seg button[aria-pressed="true"] { color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+
+  .hero { margin-top: auto; padding: clamp(18px,4vw,54px); max-width: 620px; }
+  .glass { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: clamp(18px,3vw,28px); backdrop-filter: blur(16px) saturate(1.2); box-shadow: 0 30px 70px -36px oklch(0.35 0.06 258 / 0.6); }
+  .eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary); margin-bottom: 12px; }
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 0 0 oklch(0.7 0.12 178 / 0.6); animation: pulse 2.2s ease-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 oklch(0.7 0.12 178 / 0.55); } 70% { box-shadow: 0 0 0 11px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  h1 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(30px,6vw,60px); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 14px; }
+  h1 .accent { color: var(--secondary); }
+  .sub { font-size: clamp(14px,1.4vw,17px); line-height: 1.6; color: var(--muted); margin: 0 0 20px; max-width: 38em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .field { position: relative; display: flex; align-items: center; flex: 1 1 220px; min-width: 0; border-radius: 13px; background: oklch(1 0 0 / 0.85); border: 1px solid var(--border); }
+  .field svg { position: absolute; left: 14px; width: 18px; height: 18px; color: var(--muted); }
+  .field input { flex: 1; border: 0; background: transparent; color: var(--text); font: 500 15px/1 "Hanken Grotesk", sans-serif; padding: 15px 14px 15px 42px; outline: none; width: 100%; }
+  .field.invalid { box-shadow: 0 0 0 4px oklch(0.62 0.18 18 / 0.3); }
+  .cta { position: relative; overflow: hidden; appearance: none; border: 0; cursor: pointer; padding: 14px 20px; border-radius: 12px; color: #fff; font: 700 14.5px/1 "Hanken Grotesk", sans-serif; background: linear-gradient(135deg, var(--primary), var(--secondary)); box-shadow: 0 12px 26px -10px var(--ring); }
+  .cta[disabled] { opacity: 0.7; cursor: default; }
+  .formerr { color: oklch(0.55 0.18 18); font-size: 13px; margin: 10px 0 0; display: none; }
+  .thanks { display: none; align-items: center; gap: 13px; }
+  .thanks.show { display: flex; }
+  .thanks .pray { font-size: 27px; }
+  .thanks b { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: 17px; color: var(--text); display: block; }
+  .thanks span { font-size: 13.5px; color: var(--muted); }
+  .hint { margin: 14px 0 0; font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 7px; opacity: 0.9; }
+  .hint svg { width: 14px; height: 14px; }
+
+  @media (max-width: 620px) {
+    .hero { max-width: 100%; }
+    .lockup b { font-size: 20px; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .cta { width: 100%; }
+  }
+
+  /* cookie banner */
+  .cookie { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(150%);
+    z-index: 6; display: flex; align-items: center; gap: 13px; width: min(640px, calc(100vw - 28px));
+    padding: 12px 15px; border-radius: 16px; background: oklch(1 0 0 / 0.9); border: 1px solid var(--border);
+    box-shadow: 0 22px 56px -24px oklch(0.4 0.06 258 / 0.55); backdrop-filter: blur(12px);
+    opacity: 0; transition: transform .5s cubic-bezier(.16,1,.3,1), opacity .4s; }
+  .cookie.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .cookie p { margin: 0; flex: 1; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  .cookie .ck { display: flex; gap: 8px; flex: none; }
+  .cookie button { appearance: none; cursor: pointer; border: 0; border-radius: 10px; font: 600 12.5px/1 "Hanken Grotesk", sans-serif; padding: 9px 13px; }
+  .cookie .ck-no { border: 1px solid var(--border); background: transparent; color: var(--text); }
+  .cookie .ck-yes { color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+  @media (max-width: 560px) { .cookie { flex-wrap: wrap; } .cookie p { flex-basis: 100%; } .cookie .ck { width: 100%; } .cookie .ck button { flex: 1; } }
+
+  .loader { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; background: linear-gradient(180deg,#eef6ff,#e6f5f1); transition: opacity .8s ease; }
+  .loader.hide { opacity: 0; pointer-events: none; }
+  .loader .spin { width: 42px; height: 42px; border-radius: 50%; border: 3px solid oklch(0.62 0.13 258 / 0.2); border-top-color: var(--primary); animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div id="bg" aria-hidden="true"></div>
+  <canvas id="scene"></canvas>
+
+  <div id="ui">
+    <header class="topbar">
+      <div class="lockup"><img src="assets/washli_mark.png" alt="washli" width="36" height="36" /><b>washli</b></div>
+      <nav class="seg" id="langseg" aria-label="Lingua"></nav>
+    </header>
+    <div class="hero">
+      <div class="glass">
+        <div class="eyebrow"><span class="dot"></span><span data-i="eyebrow"></span></div>
+        <h1><span data-i="h1a"></span> <span class="accent" data-i="h1b"></span></h1>
+        <p class="sub" data-i="sub"></p>
+        <form class="actions" id="notify" novalidate>
+          <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <label class="field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
+            <input type="email" id="email" name="email" required data-i-ph="ph" />
+          </label>
+          <button class="cta" id="cta" type="submit" data-i="cta"></button>
+        </form>
+        <div class="thanks" id="thanks">
+          <span class="pray">🙏</span>
+          <span><b data-i="thanks"></b><span data-i="thanksSub"></span></span>
+        </div>
+        <p class="formerr" id="formerr" data-i="err"></p>
+        <p class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V6a3 3 0 0 1 6 0v5"/><path d="M5 11h14v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/></svg><span data-i="hint"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cookie" id="cookie" role="dialog" aria-live="polite">
+    <p data-i="ckText"></p>
+    <div class="ck">
+      <button class="ck-no" id="ckNo" data-i="ckDecline"></button>
+      <button class="ck-yes" id="ckYes" data-i="ckAccept"></button>
+    </div>
+  </div>
+
+  <div class="loader" id="loader"><div class="spin"></div></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://esm.sh/three@0.160.1",
+      "three/addons/": "https://esm.sh/three@0.160.1/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = Math.min(window.innerWidth, window.innerHeight) < 760 || /Mobi|Android/i.test(navigator.userAgent);
+    const COUNTS = isMobile
+      ? { garments: 12, bubbles: 26, sparkles: 160 }
+      : { garments: 26, bubbles: 60, sparkles: 420 };
+
+    const canvas = document.getElementById("scene");
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
+    } catch (e) { document.getElementById("loader").classList.add("hide"); throw e; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.6 : 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.04;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    // vertical gradient sky as the scene background
+    (function () {
+      const c = document.createElement("canvas"); c.width = 4; c.height = 256;
+      const g = c.getContext("2d").createLinearGradient(0, 0, 0, 256);
+      g.addColorStop(0, "#eaf4ff"); g.addColorStop(0.55, "#e9f5f6"); g.addColorStop(1, "#dff3ec");
+      const ctx = c.getContext("2d"); ctx.fillStyle = g; ctx.fillRect(0, 0, 4, 256);
+      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+      scene.background = tex;
+    })();
+    scene.fog = new THREE.FogExp2(0xe6f1f7, 0.045);
+
+    const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 200);
+    const camTarget = new THREE.Vector3(0, 0.4, 0);
+
+    // ---- lights ----
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xbfe3ff, 1.15));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+    sun.position.set(6, 10, 6);
+    scene.add(sun);
+    const rim = new THREE.DirectionalLight(0x9fe6df, 0.7);
+    rim.position.set(-8, -3, -6);
+    scene.add(rim);
+
+    const C_PRIMARY = new THREE.Color("#2f6fd6");
+    const C_SECONDARY = new THREE.Color("#3ccabe");
+
+    // ---- floating garments (cloth-rippled planes) ----
+    const garmentVert = `
+      uniform float uTime; uniform float uPhase;
+      varying vec2 vUv; varying float vRip;
+      void main() {
+        vUv = uv;
+        vec3 p = position;
+        float t = uTime + uPhase;
+        float w = sin(p.x * 3.0 + t * 1.6) * 0.10 + sin(p.y * 4.0 + t * 1.1) * 0.07 + sin((p.x + p.y) * 2.0 + t) * 0.05;
+        p.z += w;
+        vRip = w;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }`;
+    const garmentFrag = `
+      uniform vec3 uA; uniform vec3 uB; uniform float uOpacity;
+      varying vec2 vUv; varying float vRip;
+      void main() {
+        vec3 col = mix(uA, uB, smoothstep(0.0, 1.0, vUv.y * 0.7 + vUv.x * 0.3));
+        col += vRip * 0.6;                  // ripple catches light
+        float edge = smoothstep(0.0, 0.12, vUv.x) * smoothstep(1.0, 0.88, vUv.x)
+                   * smoothstep(0.0, 0.10, vUv.y) * smoothstep(1.0, 0.90, vUv.y);
+        float a = uOpacity * (0.55 + 0.45 * edge);
+        gl_FragColor = vec4(col, a);
+      }`;
+    const garmentGeo = new THREE.PlaneGeometry(1.25, 1.7, 24, 28);
+    const garments = [];
+    for (let i = 0; i < COUNTS.garments; i++) {
+      const mix = Math.random();
+      const a = C_PRIMARY.clone().lerp(C_SECONDARY, mix * 0.5);
+      const b = C_SECONDARY.clone().lerp(new THREE.Color("#ffffff"), 0.35 + mix * 0.3);
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uPhase: { value: Math.random() * 100 }, uA: { value: a }, uB: { value: b }, uOpacity: { value: 0.82 } },
+        vertexShader: garmentVert, fragmentShader: garmentFrag,
+        transparent: true, side: THREE.DoubleSide, depthWrite: false,
+      });
+      const m = new THREE.Mesh(garmentGeo, mat);
+      const r = 5 + Math.random() * 12, ang = Math.random() * Math.PI * 2;
+      m.position.set(Math.cos(ang) * r, (Math.random() - 0.5) * 9, Math.sin(ang) * r - 2);
+      m.rotation.set((Math.random() - 0.5) * 1.2, Math.random() * Math.PI * 2, (Math.random() - 0.5) * 0.9);
+      const s = 0.7 + Math.random() * 1.1; m.scale.setScalar(s);
+      m.userData = { spin: (Math.random() - 0.5) * 0.06, driftY: 0.1 + Math.random() * 0.18, baseY: m.position.y };
+      garments.push(m); scene.add(m);
+    }
+
+    // ---- soap bubbles (instanced, fresnel iridescence) ----
+    const bubbleVert = `
+      varying vec3 vN; varying vec3 vView;
+      void main() {
+        vec4 wp = instanceMatrix * vec4(position, 1.0);
+        vec4 mp = modelViewMatrix * wp;
+        vN = normalize(mat3(modelViewMatrix) * mat3(instanceMatrix) * normal);
+        vView = normalize(-mp.xyz);
+        gl_Position = projectionMatrix * mp;
+      }`;
+    const bubbleFrag = `
+      varying vec3 vN; varying vec3 vView;
+      vec3 iri(float t){ return 0.55 + 0.45 * cos(6.2831*(t + vec3(0.0,0.33,0.66))); }
+      void main() {
+        float f = pow(1.0 - max(dot(normalize(vN), normalize(vView)), 0.0), 2.2);
+        vec3 col = mix(vec3(0.82,0.93,1.0), iri(f*0.8+0.1), 0.65);
+        float a = clamp(f * 0.9 + 0.06, 0.0, 0.85);
+        gl_FragColor = vec4(col, a);
+      }`;
+    const bubbleGeo = new THREE.IcosahedronGeometry(1, 3);
+    const bubbleMat = new THREE.ShaderMaterial({ vertexShader: bubbleVert, fragmentShader: bubbleFrag, transparent: true, depthWrite: false, blending: THREE.NormalBlending, side: THREE.FrontSide });
+    const bubbles = new THREE.InstancedMesh(bubbleGeo, bubbleMat, COUNTS.bubbles);
+    const bubbleData = [];
+    const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(), tmpP = new THREE.Vector3();
+    for (let i = 0; i < COUNTS.bubbles; i++) {
+      const d = { x: (Math.random() - 0.5) * 22, y: (Math.random() - 0.5) * 12, z: (Math.random() - 0.5) * 16 - 2, r: 0.18 + Math.random() * 0.7, sp: 0.25 + Math.random() * 0.5, wob: Math.random() * 6.28 };
+      bubbleData.push(d);
+      tmpP.set(d.x, d.y, d.z); tmpS.setScalar(d.r);
+      tmpM.compose(tmpP, tmpQ, tmpS); bubbles.setMatrixAt(i, tmpM);
+    }
+    scene.add(bubbles);
+
+    // ---- fresh sparkles ----
+    const spGeo = new THREE.BufferGeometry();
+    const spPos = new Float32Array(COUNTS.sparkles * 3);
+    for (let i = 0; i < COUNTS.sparkles; i++) {
+      spPos[i*3] = (Math.random()-0.5)*40; spPos[i*3+1] = (Math.random()-0.5)*22; spPos[i*3+2] = (Math.random()-0.5)*30 - 2;
+    }
+    spGeo.setAttribute("position", new THREE.BufferAttribute(spPos, 3));
+    const spMat = new THREE.PointsMaterial({ size: isMobile ? 0.06 : 0.05, color: 0xffffff, transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending });
+    const sparkles = new THREE.Points(spGeo, spMat);
+    scene.add(sparkles);
+
+    // ---- click ripples (expanding rings pool) ----
+    const ringGeo = new THREE.RingGeometry(0.6, 0.72, 48);
+    const rings = [];
+    for (let i = 0; i < 6; i++) {
+      const mat = new THREE.MeshBasicMaterial({ color: 0x9fe9ff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending });
+      const m = new THREE.Mesh(ringGeo, mat); m.visible = false; m.userData = { t: 0 }; scene.add(m); rings.push(m);
+    }
+    let ringIdx = 0;
+    function spawnRing(world) {
+      const m = rings[ringIdx]; ringIdx = (ringIdx + 1) % rings.length;
+      m.position.copy(world); m.lookAt(camera.position); m.userData.t = 0; m.visible = true; m.material.opacity = 0.9;
+    }
+
+    // ---- post: bloom ----
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), isMobile ? 0.5 : 0.7, 0.85, 0.2);
+    composer.addPass(bloom);
+    composer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.6 : 2));
+    composer.setSize(window.innerWidth, window.innerHeight);
+
+    // ---- camera orbit (drag + inertia) + idle drift + pointer parallax ----
+    let theta = 0.5, phi = 1.45, radius = isMobile ? 17 : 14;
+    let vTheta = 0, vPhi = 0, dragging = false, lastX = 0, lastY = 0, lastMove = 0;
+    let parX = 0, parY = 0, tParX = 0, tParY = 0;
+
+    function onDown(e) { dragging = true; lastMove = performance.now(); const t = e.touches ? e.touches[0] : e; lastX = t.clientX; lastY = t.clientY; }
+    function onMove(e) {
+      const t = e.touches ? e.touches[0] : e; if (!t) return;
+      // pointer parallax (subtle), always
+      tParX = (t.clientX / window.innerWidth - 0.5);
+      tParY = (t.clientY / window.innerHeight - 0.5);
+      if (!dragging) return;
+      const dx = t.clientX - lastX, dy = t.clientY - lastY; lastX = t.clientX; lastY = t.clientY; lastMove = performance.now();
+      vTheta = -dx * 0.005; vPhi = -dy * 0.005;
+      theta += vTheta; phi = Math.max(0.6, Math.min(2.4, phi + vPhi));
+    }
+    function onUp() { dragging = false; }
+    function screenToWorld(cx, cy) {
+      const ndc = new THREE.Vector2((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
+      const ray = new THREE.Raycaster(); ray.setFromCamera(ndc, camera);
+      return ray.ray.at(8 + Math.random() * 3, new THREE.Vector3());
+    }
+    let downX = 0, downY = 0, downT = 0;
+    canvas.addEventListener("pointerdown", (e) => { downX = e.clientX; downY = e.clientY; downT = performance.now(); onDown(e); }, { passive: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", (e) => {
+      onUp();
+      // a tap (not a drag) spawns a freshness burst
+      const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
+      if (moved < 8 && performance.now() - downT < 500 && !overUI(e)) spawnRing(screenToWorld(e.clientX, e.clientY));
+    }, { passive: true });
+    window.addEventListener("pointercancel", onUp, { passive: true });
+    function overUI(e) { const el = document.elementFromPoint(e.clientX, e.clientY); return el && el.closest && el.closest("#ui, .cookie, .glass"); }
+
+    function resize() {
+      const w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      renderer.setSize(w, h); composer.setSize(w, h); bloom.setSize(w, h);
+    }
+    window.addEventListener("resize", resize);
+
+    const clock = new THREE.Clock();
+    function render() {
+      const dt = Math.min(clock.getDelta(), 0.05), tm = clock.elapsedTime;
+      // idle auto-drift when not dragging
+      if (!dragging) {
+        if (performance.now() - lastMove > 1400) theta += dt * 0.04;
+        vTheta *= 0.92; vPhi *= 0.92; theta += vTheta; phi = Math.max(0.6, Math.min(2.4, phi + vPhi));
+      }
+      parX += (tParX - parX) * 0.04; parY += (tParY - parY) * 0.04;
+      const px = Math.sin(theta) * Math.sin(phi) * radius;
+      const py = Math.cos(phi) * radius;
+      const pz = Math.cos(theta) * Math.sin(phi) * radius;
+      camera.position.set(px + parX * 2.2, py - parY * 1.6 + 0.6, pz);
+      camera.lookAt(camTarget);
+
+      for (const m of garments) { m.material.uniforms.uTime.value = tm; m.rotation.y += m.userData.spin * dt; m.position.y = m.userData.baseY + Math.sin(tm * m.userData.driftY + m.userData.baseY) * 0.5; }
+
+      for (let i = 0; i < bubbleData.length; i++) {
+        const d = bubbleData[i]; d.y += d.sp * dt; if (d.y > 7) { d.y = -7; d.x = (Math.random()-0.5)*22; }
+        tmpP.set(d.x + Math.sin(tm * 0.6 + d.wob) * 0.4, d.y, d.z + Math.cos(tm * 0.5 + d.wob) * 0.3);
+        tmpS.setScalar(d.r); tmpM.compose(tmpP, tmpQ, tmpS); bubbles.setMatrixAt(i, tmpM);
+      }
+      bubbles.instanceMatrix.needsUpdate = true;
+      sparkles.rotation.y += dt * 0.01;
+
+      for (const m of rings) { if (!m.visible) continue; m.userData.t += dt; const k = m.userData.t / 1.1; if (k >= 1) { m.visible = false; continue; } const s = 0.4 + k * 7; m.scale.setScalar(s); m.material.opacity = 0.9 * (1 - k); }
+
+      composer.render();
+    }
+
+    let running = true;
+    function loop() { if (!running) return; render(); requestAnimationFrame(loop); }
+
+    // start once the first frame is ready
+    resize();
+    if (reduced) { render(); /* single static frame */ }
+    else { loop(); }
+    requestAnimationFrame(() => document.getElementById("loader").classList.add("hide"));
+
+    // pause when tab hidden (battery)
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { running = false; }
+      else if (!reduced) { running = true; clock.getDelta(); loop(); }
+    });
+  </script>
+
+  <script>
+    // ---- i18n + email (Web3Forms) + cookie — vanilla, shared with the journey page ----
+    (function () {
+      var WEB3FORMS_KEY = "ac5b6547-512a-4cb7-97c4-f03101424f77";
+      var T = {
+        it: { eyebrow: "La rete del bucato · Svizzera", h1a: "Entra nel mondo", h1b: "fresco.", sub: "Capi puliti che fluttuano, bolle di sapone, luce. Questo è washli: ritiriamo, laviamo con cura nelle lavanderie locali e ti riportiamo tutto fresco.", ph: "La tua email", cta: "Avvisami al lancio", hint: "Trascina per guardarti intorno · tocca per la freschezza", thanks: "Grazie", thanksSub: "Ti avvisiamo al lancio nel tuo cantone.", err: "Qualcosa è andato storto — riprova.", ckText: "Usiamo cookie essenziali per far funzionare il sito e capire come migliorarlo.", ckAccept: "Accetta", ckDecline: "Rifiuta" },
+        de: { eyebrow: "Das Wäsche-Netz · Schweiz", h1a: "Tritt ein in die", h1b: "Frische.", sub: "Saubere Kleidung, die schwebt, Seifenblasen, Licht. Das ist washli: abholen, sorgfältig in lokalen Wäschereien waschen und frisch zurückbringen.", ph: "Deine E-Mail", cta: "Benachrichtige mich", hint: "Ziehen zum Umsehen · tippen für Frische", thanks: "Danke", thanksSub: "Wir melden uns zum Launch in deinem Kanton.", err: "Etwas ist schiefgelaufen — bitte erneut versuchen.", ckText: "Wir verwenden essenzielle Cookies, damit die Seite funktioniert und wir sie verbessern können.", ckAccept: "Akzeptieren", ckDecline: "Ablehnen" },
+        fr: { eyebrow: "Le réseau du linge · Suisse", h1a: "Entre dans la", h1b: "fraîcheur.", sub: "Du linge propre qui flotte, des bulles de savon, de la lumière. C'est washli : on récupère, on lave avec soin dans les blanchisseries locales et on rapporte tout frais.", ph: "Ton e-mail", cta: "Préviens-moi", hint: "Glisse pour regarder · touche pour la fraîcheur", thanks: "Merci", thanksSub: "On te préviendra au lancement dans ton canton.", err: "Une erreur s'est produite — réessaie.", ckText: "Nous utilisons des cookies essentiels pour faire fonctionner le site et l'améliorer.", ckAccept: "Accepter", ckDecline: "Refuser" },
+        en: { eyebrow: "The laundry network · Switzerland", h1a: "Step into the", h1b: "freshness.", sub: "Clean clothes that float, soap bubbles, light. This is washli: we pick up, wash with care at local laundries and bring it all back fresh.", ph: "Your email", cta: "Notify me", hint: "Drag to look around · tap for freshness", thanks: "Thanks", thanksSub: "We'll let you know when we launch in your canton.", err: "Something went wrong — please try again.", ckText: "We use essential cookies to run the site and understand how to improve it.", ckAccept: "Accept", ckDecline: "Decline" }
+      };
+      var langs = ["it", "de", "fr", "en"];
+      var lang = "it";
+      try { var s = localStorage.getItem("washli-lang"); if (s && T[s]) lang = s; } catch (e) {}
+
+      var seg = document.getElementById("langseg");
+      langs.forEach(function (l) {
+        var b = document.createElement("button"); b.textContent = l.toUpperCase();
+        b.setAttribute("aria-pressed", l === lang ? "true" : "false");
+        b.addEventListener("click", function () { lang = l; apply(); });
+        seg.appendChild(b);
+      });
+
+      function apply() {
+        document.documentElement.setAttribute("lang", lang);
+        try { localStorage.setItem("washli-lang", lang); } catch (e) {}
+        var dict = T[lang];
+        document.querySelectorAll("[data-i]").forEach(function (el) { var k = el.getAttribute("data-i"); if (dict[k] != null) el.textContent = dict[k]; });
+        document.querySelectorAll("[data-i-ph]").forEach(function (el) { var k = el.getAttribute("data-i-ph"); if (dict[k] != null) el.setAttribute("placeholder", dict[k]); });
+        Array.prototype.forEach.call(seg.children, function (b, i) { b.setAttribute("aria-pressed", langs[i] === lang ? "true" : "false"); });
+      }
+      apply();
+
+      // email → Web3Forms
+      var form = document.getElementById("notify"), email = document.getElementById("email"),
+          cta = document.getElementById("cta"), err = document.getElementById("formerr"),
+          thanks = document.getElementById("thanks");
+      form.addEventListener("submit", function (e) {
+        e.preventDefault(); err.style.display = "none";
+        var val = (email.value || "").trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) { form.querySelector(".field").classList.add("invalid"); setTimeout(function () { form.querySelector(".field").classList.remove("invalid"); }, 1100); return; }
+        cta.disabled = true;
+        var fd = new FormData(); fd.append("access_key", WEB3FORMS_KEY); fd.set("email", val);
+        fd.append("subject", "New washli waitlist signup"); fd.append("from_name", "washli website (world)"); fd.append("language", lang);
+        fetch("https://api.web3forms.com/submit", { method: "POST", body: fd })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { if (d && d.success) { form.style.display = "none"; thanks.classList.add("show"); } else { err.style.display = "block"; cta.disabled = false; } })
+          .catch(function () { err.style.display = "block"; cta.disabled = false; });
+      });
+
+      // cookie banner
+      var cookie = document.getElementById("cookie");
+      function choose(v) { try { localStorage.setItem("washli-cookie-consent", v); } catch (e) {} cookie.classList.remove("show"); }
+      document.getElementById("ckYes").addEventListener("click", function () { choose("accepted"); });
+      document.getElementById("ckNo").addEventListener("click", function () { choose("declined"); });
+      var has = false; try { has = !!localStorage.getItem("washli-cookie-consent"); } catch (e) {}
+      if (!has) setTimeout(function () { cookie.classList.add("show"); }, 1100);
+    })();
+  </script>
+</body>
+</html>
