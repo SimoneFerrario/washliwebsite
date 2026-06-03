@@ -75,6 +75,9 @@
     h1 { font-size: clamp(24px,7.5vw,38px); margin-bottom: 8px; }
     .sub { font-size: 13px; line-height: 1.45; margin-bottom: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .actions { flex-direction: column; align-items: stretch; }
+    /* in a column the email field must NOT flex-grow (it was stretching to a
+       huge box); keep it at its natural input height. */
+    .field { flex: 0 0 auto; }
     .cta { width: 100%; }
     .hint { display: none; }
     .dots { right: 12px; gap: 12px; }
